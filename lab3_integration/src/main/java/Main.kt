@@ -1,3 +1,5 @@
+import methods.MethodsFactory
+import methods.Simpson
 import java.lang.NumberFormatException
 
 fun main() {
@@ -16,6 +18,25 @@ fun main() {
                 throw IllegalArgumentException()
             }
             function = Functions(number)
+            check = true
+        } catch (e: IllegalArgumentException) {
+            print("Введенные данные некорректы. Введите число от 1 до 3\n")
+        }
+    }
+    /* Выбор метода решения */
+    check = false
+    var chosenMethod = 0
+    while (!check) {
+        try {
+            println("Численные методы:\n1) Метод прямоугольников\n2) Метод трапеций\n3) Метод Симпсона")
+            print("Выберите метод вычисления: ")
+            val line = readLine()
+            if (line != null) {
+                chosenMethod = line.trim().toInt()
+            }
+            if (chosenMethod !in 1 .. 3) {
+                throw IllegalArgumentException()
+            }
             check = true
         } catch (e: IllegalArgumentException) {
             print("Введенные данные некорректы. Введите число от 1 до 3\n")
@@ -40,10 +61,12 @@ fun main() {
             print("Введенные данные некорректы\n")
         }
     }
-    val simpson = Simpson(a, b)
+    /* Создание экземпляра нужного класса-метода */
+    val methodFactory = MethodsFactory()
+    val method = methodFactory.createMethod(chosenMethod, a, b)
     /* Ввод точности вычислений */
     check = false
-    var estimate = 0.01
+    var estimate = 0.001
     while (!check) {
         try {
             print("Введите значение точности вычислений (по умолчанию $estimate): ")
@@ -57,6 +80,5 @@ fun main() {
             print("Введенные данные некорректы\n")
         }
     }
-    val answer: Answer = simpson.solve(function, estimate)
-    answer.printAnswer()
+    method.solve(function, estimate)
 }

@@ -1,10 +1,10 @@
 class Answer(var result: Double, var n: Int, var estimate: Double,  var accuracy: Double) {
 
-    fun printAnswer() {
-        print("\nВычисленное значение интеграла: ${result.format(defineRangOfAccuracy(estimate)).replace(",", ".")}\n" +
+    fun printAnswer(name: String) {
+        print("\nРезультат выполнения метода $name\nВычисленное значение интеграла: ${result.format(defineRangOfAccuracy(estimate)).replace(",", ".")}\n" +
                 "Число разбиений интервала: $n\n" +
                 "Заданная точность: $estimate\n" +
-                "Погрешность: ${accuracy.format(defineRangOfAccuracy(estimate) + 1).replace(",", ".")}"
+                "Погрешность: ${accuracy.format(defineRangOfAccuracy(estimate) + 1).replace(",", ".")}\n"
         )
     }
 }
