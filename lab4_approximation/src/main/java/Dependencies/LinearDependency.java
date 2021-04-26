@@ -3,6 +3,7 @@ package Dependencies;
 import DateStructure.Equation;
 import DateStructure.LinearSystemOfEquations;
 import DateStructure.Point;
+import Exceptions.CannotBuildFunction;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import static java.lang.Math.*;
 public class LinearDependency extends Dependent {
 
     public LinearDependency(ArrayList<Point> points, BufferedWriter writer) {
-        this.dependencyName = "Линейная зависимость";
+        this.dependencyName = "Линейная функция";
         this.points = points;
         this.numberOfPoints = points.size();
         this.writer = writer;
@@ -37,6 +38,10 @@ public class LinearDependency extends Dependent {
         equation = new Equation(new ArrayList<>(Arrays.asList(b1, (double) numberOfPoints)), c2);
         linearSystem.addEquation(equation);
         coefficients = linearSystem.solve();
+        if (Double.isNaN(coefficients[0])) {
+            setExist(false);
+            throw new CannotBuildFunction(dependencyName);
+        }
         /* Линейная функция */
         function = (Double x) -> coefficients[0] * x + coefficients[1];
         calculateDeviation(points);

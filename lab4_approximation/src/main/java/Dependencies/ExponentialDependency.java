@@ -3,6 +3,7 @@ package Dependencies;
 import DateStructure.Equation;
 import DateStructure.LinearSystemOfEquations;
 import DateStructure.Point;
+import Exceptions.CannotBuildFunction;
 
 import java.io.BufferedWriter;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import static java.lang.Math.*;
 public class ExponentialDependency extends Dependent {
 
     public ExponentialDependency(ArrayList<Point> points, BufferedWriter writer) {
-        this.dependencyName = "Экспоненциальная зависимость";
+        this.dependencyName = "Экспоненциальная функция";
         this.points = points;
         this.numberOfPoints = points.size();
         this.writer = writer;
@@ -37,6 +38,10 @@ public class ExponentialDependency extends Dependent {
         linearSystem.addEquation(equation);
         coefficients = linearSystem.solve();
         coefficients[0] = exp(coefficients[0]);
+        if (Double.isNaN(coefficients[0])) {
+            setExist(false);
+            throw new CannotBuildFunction(dependencyName);
+        }
         /* Экспоненциальная функция */
         function = (Double x) -> coefficients[0] * exp(x * coefficients[1]);
         calculateDeviation(points);

@@ -3,6 +3,7 @@ package Dependencies;
 import DateStructure.Equation;
 import DateStructure.LinearSystemOfEquations;
 import DateStructure.Point;
+import Exceptions.CannotBuildFunction;
 
 import java.io.BufferedWriter;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import static java.lang.Math.pow;
 public class QuadraticDependency extends Dependent {
 
     public QuadraticDependency(ArrayList<Point> points, BufferedWriter writer) {
-        this.dependencyName = "Квадратичная зависимость";
+        this.dependencyName = "Квадратичная функция";
         this.points = points;
         this.numberOfPoints = points.size();
         this.writer = writer;
@@ -41,6 +42,10 @@ public class QuadraticDependency extends Dependent {
         equation = new Equation(new ArrayList<>(Arrays.asList(a3, a2, a1)), d3);
         linearSystem.addEquation(equation);
         coefficients = linearSystem.solve();
+        if (Double.isNaN(coefficients[0])) {
+            setExist(false);
+            throw new CannotBuildFunction(dependencyName);
+        }
         /* Квадратичная функция */
         function = (Double x) -> coefficients[0] * pow (x, 2) + coefficients[1] * x + coefficients[2];
         calculateDeviation(points);

@@ -39,10 +39,8 @@ public class DrawingGraph {
             }
         }
         double addingArea = abs(rightX - leftX) * 0.05;
-        if (leftX < 0) leftX = addingArea;
-        else leftX -= addingArea;
-        if (rightX < 0) rightX -= addingArea;
-        else rightX += addingArea;
+        leftX -= addingArea;
+        rightX += addingArea;
     }
 
     public void drawMainFrame() {
@@ -61,8 +59,10 @@ public class DrawingGraph {
         chart.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line);
         ArrayList<Double> dataX = new ArrayList<>(), dataY = new ArrayList<>();
         for (double i = leftX; i < rightX; i += 0.01) {
-            dataX.add(i);
-            dataY.add(dependency.getFunction().apply(i));
+            if (!Double.isNaN(dependency.getFunction().apply(i))) {
+                dataX.add(i);
+                dataY.add(dependency.getFunction().apply(i));
+            }
         }
         XYSeries series = chart.addSeries(dependency.getDependencyFunction(), dataX, dataY);
         series.setMarker(SeriesMarkers.NONE);

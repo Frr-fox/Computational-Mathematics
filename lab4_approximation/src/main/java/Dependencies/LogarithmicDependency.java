@@ -3,6 +3,7 @@ package Dependencies;
 import DateStructure.Equation;
 import DateStructure.LinearSystemOfEquations;
 import DateStructure.Point;
+import Exceptions.CannotBuildFunction;
 
 import java.io.BufferedWriter;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import static java.lang.Math.*;
 public class LogarithmicDependency extends Dependent {
 
     public LogarithmicDependency(ArrayList<Point> points, BufferedWriter writer) {
-        this.dependencyName = "Логарифмическая зависимость";
+        this.dependencyName = "Логарифмическая функция";
         this.points = points;
         this.numberOfPoints = points.size();
         this.writer = writer;
@@ -36,6 +37,10 @@ public class LogarithmicDependency extends Dependent {
         equation = new Equation(new ArrayList<>(Arrays.asList(b1, (double) numberOfPoints)), c2);
         linearSystem.addEquation(equation);
         coefficients = linearSystem.solve();
+        if (Double.isNaN(coefficients[0])) {
+            setExist(false);
+            throw new CannotBuildFunction(dependencyName);
+        }
         /* Логарифмическая функция */
         function = (Double x) -> coefficients[0] * log(x) + coefficients[1];
         calculateDeviation(points);

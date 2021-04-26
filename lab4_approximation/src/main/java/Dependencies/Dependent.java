@@ -7,19 +7,21 @@ import lombok.Setter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
-import java.util.IllegalFormatException;
 import java.util.function.UnaryOperator;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
+import static Utils.StringFormatter.center;
 
 public abstract class Dependent {
     protected String dependencyName;
     @Setter
     @Getter
     protected String dependencyFunction;
+    @Setter
+    @Getter
+    protected boolean isExist = true;
 
     protected ArrayList<Point> points;
     protected int numberOfPoints;
@@ -27,9 +29,9 @@ public abstract class Dependent {
     protected Double[] coefficients;
     @Getter
     protected UnaryOperator<Double> function;
-    double deviation = 0;
+    double deviation = 1000;
     @Getter
-    double rootMeanSquareDeviation;
+    double rootMeanSquareDeviation = 1000;
 
     protected BufferedWriter writer;
 
@@ -105,31 +107,5 @@ public abstract class Dependent {
         writer.flush();
         writer.write("\n");
         writer.flush();
-    }
-
-    private void center(String fmtStr, Formatter fmt, Object obj, int width) throws IOException {
-        String str;
-        try {
-            Formatter tmp = new Formatter();
-            tmp.format(fmtStr, obj);
-            str = tmp.toString();
-        } catch(IllegalFormatException exc) {
-            writer.write("Неверный запрос формата\n");
-            writer.flush();
-            fmt.format("");
-            return;
-        }
-        int dif = width - str.length();
-        if(dif < 0) {
-            fmt.format(str);
-            return;
-        }
-        char[] pad = new char[dif/2];
-        Arrays.fill(pad, ' ');
-        fmt.format(new String(pad));
-        fmt.format(str);
-        pad = new char[width-dif/2-str.length()];
-        Arrays.fill(pad, ' ');
-        fmt.format(new String(pad));
     }
 }

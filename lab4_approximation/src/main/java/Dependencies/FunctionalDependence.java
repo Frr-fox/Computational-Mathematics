@@ -1,12 +1,16 @@
 package Dependencies;
 
 import DateStructure.Point;
+import Exceptions.CannotBuildFunction;
 import Utils.DrawingGraph;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Formatter;
+
+import static Utils.StringFormatter.formatStingCenter;
 
 public class FunctionalDependence {
     private ArrayList<Point> points;
@@ -24,11 +28,16 @@ public class FunctionalDependence {
                 new QuadraticDependency(points, writer), new ExponentialDependency(points, writer),
                 new LogarithmicDependency(points, writer), new PowerDependency(points, writer)));
         for (Dependent dependency: dependencies) {
-            dependency.buildDependency();
-            dependency.createDependencyFunction();
-            dependency.printTable();
-            dependency.printAddingCharacters();
-            drawing.drawDependency(dependency);
+            try {
+                dependency.buildDependency();
+                dependency.createDependencyFunction();
+                dependency.printTable();
+                dependency.printAddingCharacters();
+                drawing.drawDependency(dependency);
+            } catch (CannotBuildFunction e) {
+                writer.write(e.getMessage());
+                writer.flush();
+            }
         }
         drawing.showGraph();
         int theMostSuitableDependency = 0;
@@ -47,26 +56,25 @@ public class FunctionalDependence {
 
     private void printResultsOfApproximation(ArrayList<Dependent> dependencies) throws IOException {
         printHeader();
-        writer.write(String.format("| φ = ax + b       |%11.3f|%11.3f|%11s|%22.3f|%34.3f|\n", dependencies.get(0).coefficients[0],
-                dependencies.get(0).coefficients[1], "     -     ", dependencies.get(0).deviation,
-                dependencies.get(0).getRootMeanSquareDeviation()));
-        writer.flush();
-        writer.write(String.format("| φ = ax² + bx + c |%11.3f|%11.3f|%11.3f|%22.3f|%34.3f|\n", dependencies.get(1).coefficients[0],
-                dependencies.get(1).coefficients[1], dependencies.get(1).coefficients[2], dependencies.get(1).deviation,
-                dependencies.get(1).getRootMeanSquareDeviation()));
-        writer.flush();
-        writer.write(String.format("| φ = aeᵇᵡ         |%11.3f|%11.3f|%11s|%22.3f|%34.3f|\n", dependencies.get(2).coefficients[0],
-                dependencies.get(2).coefficients[1], "     -     ", dependencies.get(2).deviation,
-                dependencies.get(2).getRootMeanSquareDeviation()));
-        writer.flush();
-        writer.write(String.format("| φ = a ln(x) + b  |%11.3f|%11.3f|%11s|%22.3f|%34.3f|\n", dependencies.get(3).coefficients[0],
-                dependencies.get(3).coefficients[1], "     -     ", dependencies.get(3).deviation,
-                dependencies.get(3).getRootMeanSquareDeviation()));
-        writer.flush();
-        writer.write(String.format("| φ = axᵇ          |%11.3f|%11.3f|%11s|%22.3f|%34.3f|\n", dependencies.get(4).coefficients[0],
-                dependencies.get(4).coefficients[1], "     -     ", dependencies.get(4).deviation,
-                dependencies.get(4).getRootMeanSquareDeviation()));
-        writer.flush();
+        String[] functions = {" φ = ax + b", " φ = ax² + bx + c", " φ = aeᵇᵡ", " φ = a ln(x) + b", " φ = axᵇ"};
+        for (int i = 0; i < 5; i++) {
+            String empty = "-";
+            if (dependencies.get(i).isExist()) {
+                if (dependencies.get(i).coefficients.length == 3) {
+                    empty = String.format("%.3f", dependencies.get(i).coefficients[2]);
+                }
+                writer.write(String.format("|%-18s|%11.3f|%11.3f|%11s|%22.3f|%34.3f|\n", functions[i],
+                        dependencies.get(i).coefficients[0], dependencies.get(i).coefficients[1],
+                        formatStingCenter(empty, 11), dependencies.get(i).deviation,
+                        dependencies.get(i).getRootMeanSquareDeviation()));
+            } else {
+                writer.write(String.format("|%-18s|%11s|%11s|%11s|%22s|%34s|\n", functions[i],
+                        formatStingCenter(empty, 11), formatStingCenter(empty, 11),
+                        formatStingCenter(empty, 11), formatStingCenter(empty, 22),
+                        formatStingCenter(empty, 34)));
+            }
+            writer.flush();
+        }
         writer.write("--------------------------------------------------------------------------------------" +
                 "----------------------------\n");
         writer.flush();

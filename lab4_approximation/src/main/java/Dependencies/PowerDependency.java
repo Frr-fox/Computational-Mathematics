@@ -3,6 +3,7 @@ package Dependencies;
 import DateStructure.Equation;
 import DateStructure.LinearSystemOfEquations;
 import DateStructure.Point;
+import Exceptions.CannotBuildFunction;
 
 import java.io.BufferedWriter;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import static java.lang.Math.*;
 public class PowerDependency extends Dependent {
 
     public PowerDependency(ArrayList<Point> points, BufferedWriter writer) {
-        this.dependencyName = "Степенная зависимость";
+        this.dependencyName = "Степенная функция";
         this.points = points;
         this.numberOfPoints = points.size();
         this.writer = writer;
@@ -38,6 +39,10 @@ public class PowerDependency extends Dependent {
         linearSystem.addEquation(equation);
         coefficients = linearSystem.solve();
         coefficients[0] = exp(coefficients[0]);
+        if (Double.isNaN(coefficients[0])) {
+            setExist(false);
+            throw new CannotBuildFunction(dependencyName);
+        }
         /* Степенная функция */
         function = (Double x) -> coefficients[0] * pow(x, coefficients[1]);
         calculateDeviation(points);
